@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# もくじ
+# 1. ビルドとテストを行って異常終了したらコミットを中断する
+# 2. git pullしてコンフリクトが起きたらコミットを中断する
+
+# 開始
+# 1. ビルドとテストを行って異常終了したらコミットを中断する
+
+# 0以外の処理ステータスだったら終了
+set -e
+
+echo "Running yarn build..."
+yarn build
+
+echo "Running yarn test..."
+yarn test
+
+# 2. git pullしてコンフリクトが起きたら中断する
+# 現在のブランチを取得
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+echo "Running git pull..."
+git pull origin "$CURRENT_BRANCH"
+
+if [ $? -ne 0 ]; then
+  echo "Merge conflict detected. Aborting commit."
+  exit 1
+fi
+
+echo "Pre-commit checks passed successfully."
+

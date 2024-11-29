@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# もくじ
+# 1. package.jsonを読み込み、versionの値でgitをタグ付けする
+
+# 開始
+# 1. package.jsonを読み込み、versionの値でgitをタグ付けする
+# `version` の値を取得
+PROJECT_ROOT=$(git rev-parse --show-superproject-working-tree --show-toplevel | head -1)
+VERSION=$(grep '"version"' ${PROJECT_ROOT}/package.json | sed -E 's/.*"version": *"([^"]+)".*/\1/')
+
+# 現在のタグ一覧を取得し、バージョンが含まれているかチェック
+if git tag | grep -q "$VERSION"; then
+  # バージョンタグが既に存在する場合は削除
+  git tag -d "$VERSION"
+  echo "既存のタグ $VERSION を削除しました"
+fi
+
+# 新しいバージョンタグを追加
+git tag "$VERSION"
+echo "新しいタグ $VERSION を追加しました"
