@@ -1,2 +1,4 @@
-# project-common-parts
-Settings for each project
+## 説明
+プロジェクトごとに毎回使う設定ファイルなどをまとめました。
+自分のリポジトリにフォークして自分用に設定を書き換えたりしてください。
+
