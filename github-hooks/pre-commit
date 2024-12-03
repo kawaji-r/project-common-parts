@@ -4,11 +4,27 @@
 set -e
 
 # もくじ
-# 1. ビルドとテストを行って異常終了したらコミットを中断する
-# 2. git pullしてコンフリクトが起きたらコミットを中断する
+# 1. 特定のブランチの場合、コミットは禁止
+# 2. ビルドとテストを行って異常終了したらコミットを中断する
+# 3. git pullしてコンフリクトが起きたらコミットを中断する
 
 # 開始
-# 1. ビルドとテストを行って異常終了したらコミットを中断する
+# 1. 特定のブランチの場合、コミットは禁止
+# 禁止ブランチの配列を定義
+PROTECTED_BRANCHES=("main" "develop")
+
+# 現在のブランチ名を取得
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# 現在のブランチ名が禁止ブランチのいずれかに含まれるかをチェック
+for branch in "${PROTECTED_BRANCHES[@]}"; do
+  if [ "$CURRENT_BRANCH" = "$branch" ]; then
+    echo "Custom Error: Cannot commit directly to the '$CURRENT_BRANCH' branch."
+    exit 1
+  fi
+done
+
+# 2. ビルドとテストを行って異常終了したらコミットを中断する
 
 echo "Running yarn build..."
 yarn build
@@ -16,17 +32,12 @@ yarn build
 echo "Running yarn test..."
 yarn test
 
-# 2. git pullしてコンフリクトが起きたら中断する
+# 3. git pullしてコンフリクトが起きたら中断する
 # 現在のブランチを取得
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 echo "Running git pull..."
 git pull origin "$CURRENT_BRANCH"
-
-if [ $? -ne 0 ]; then
-  echo "Merge conflict detected. Aborting commit."
-  exit 1
-fi
 
 echo "Pre-commit checks passed successfully."
 
