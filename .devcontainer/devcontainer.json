@@ -3,7 +3,7 @@
   // 拡張性を持たせてdocker-composeを設定
   "dockerComposeFile": ["./docker-compose.yml"],
   // docker-compose.ymlのサービス名に合わせる
-  "service": "myapp",
+  "service": "development",
   // DockerfileのWORKDIRに合わせる
   "workspaceFolder": "/workspace",
   "features": {
@@ -28,5 +28,6 @@
     "DISPLAY": "${env:DISPLAY}"
   },
   // ホストとクリップボードの共有用 etc...
-  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y wl-clipboard && echo 'set -o vi' >> ~/.bashrc"
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y wl-clipboard && echo 'set -o vi' >> ~/.bashrc",
+  "postStartCommand": ""
 }
